@@ -42,7 +42,7 @@ public class Member {
 					System.out.println();
 					System.out.println("   =========================================================");
 					System.out.println("   |    1.영화예매      2.영화정보    3.예매확인 및 취소   |");
-					System.out.println("   |    4.관리자페이지  5.로그아웃    5.종료               |");
+					System.out.println("   |    4.관리자페이지  5.로그아웃    6.종료               |");
 					System.out.println("   =========================================================");
 					System.out.print("   ▶ ");
 					ck = sc.nextInt();

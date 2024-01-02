@@ -1,5 +1,6 @@
 package movie;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -123,6 +124,43 @@ public class MovieDAO {
 
 		return ticket;
 	}
+	/*
+	 * 프로시저 사용시
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * // 영화 예매 // 부킹테이블 (중복여부 체크) > 스크리닝 테이블 (좌석체크) > 부킹테이블 (값 입력) public CinemaDTO
+	 * ticketing(int movieNum, String userId) { Connection conn =
+	 * DBConn.getConnection(); CallableStatement cstmt = null; PreparedStatement
+	 * pstmt = null; ResultSet rs = null; String sql;
+	 * 
+	 * CinemaDTO ticket = null; // 반환값 생성
+	 * 
+	 * try { // 프로시저 호출 sql = "{call TicketingProcedure(?, ?)}"; cstmt =
+	 * conn.prepareCall(sql); cstmt.setInt(1, movieNum); cstmt.setString(2, userId);
+	 * cstmt.execute();
+	 * 
+	 * // 프로시저의 반환값을 사용하여 CinemaDTO ticket 초기화 sql =
+	 * "select * from booking where movieNo = ? and userId = ?"; pstmt =
+	 * conn.prepareStatement(sql);
+	 * 
+	 * // 프로시저 호출 후에 반환된 값을 사용 pstmt.setInt(1, movieNum); pstmt.setString(2,
+	 * userId); rs = pstmt.executeQuery();
+	 * 
+	 * if (rs.next()) { // 예매 정보 저장 ticket = new CinemaDTO();
+	 * ticket.setMovieNo(rs.getInt("movieNo"));
+	 * ticket.setMovieName(rs.getString("movieName"));
+	 * ticket.setId(rs.getString("userId"));
+	 * ticket.setCheckMoive(rs.getString("checkMoive")); } pstmt.close();
+	 * cstmt.close(); rs.close();
+	 * 
+	 * } catch (Exception e) { System.out.println(e.toString()); }
+	 * 
+	 * return ticket; }
+	 */
 
 	// 전체 영화 정보
 	public List<CinemaDTO> moivesInfo() {

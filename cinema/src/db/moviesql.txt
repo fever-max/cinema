@@ -1,0 +1,114 @@
+--<<무비 프로젝트>>
+
+--회원정보 테이블
+CREATE TABLE members (
+    id VARCHAR2(30) NOT NULL PRIMARY KEY,
+    pw VARCHAR2(50),
+    name VARCHAR2(20),
+    birth NUMBER,
+    tel VARCHAR2(15)
+);
+
+SELECT * from members;
+
+INSERT into members (id, pw, name, birth, tel) VALUES ('admin','1234','admin',111111,'010-1111-1111');
+commit;
+
+--영화정보 테이블
+CREATE TABLE movies (
+    movieNo NUMBER NOT NULL PRIMARY KEY,
+    movieName VARCHAR2(50) NOT NULL,
+    movieGenre VARCHAR2(50),
+    movieTime VARCHAR2(50),
+    movieSub VARCHAR2(300)
+);
+
+
+--영화정보 입력
+INSERT INTO movies VALUES (1, '노량','액션, 드라마','90분','2023년 12월, 모두를 압도할 최후의 전투가 시작된다!');
+INSERT INTO movies VALUES (2, '서울의봄', '드라마', '141분','목숨을 건 두 세력의 팽팽한 대립. 오늘 밤, 대한민국 수도에서 가장 치열한 전쟁이 펼쳐진다!');
+INSERT INTO movies VALUES (3, '아쿠아맨과 로스트 킹덤', '액션, 판타지','124분','2023년 12월, 모두를 압도할 최후의 전투가 시작된다!');
+INSERT INTO movies VALUES (4, '류이치 사카모토-오퍼스', '다큐멘터리','103분','힘겨운 숨결과 함께 거장이 건네는 숨 막히도록 아름다운 마지막 인사가 연주된다.');
+INSERT INTO movies VALUES (5, '괴물', '미스터리, 드라마', '127분', '괴물은 누구인가? 태풍이 몰아치던 어느 날, 아무도 몰랐던 진실이 드러난다.');
+
+
+select * FROM movies;
+
+
+--상영정보 테이블
+CREATE TABLE screenings (
+    movieNo NUMBER,
+    movieName VARCHAR2(50) NOT NULL,
+    fullSeats NUMBER,
+    nowSeats NUMBER,
+    FOREIGN KEY (movieNo) REFERENCES movies (movieNo)
+);
+
+
+INSERT INTO screenings VALUES (1, '노량',30,30);
+INSERT INTO screenings VALUES (2, '서울의봄',30,30);
+INSERT INTO screenings VALUES (3, '아쿠아맨과 로스트 킹덤',30,30);
+INSERT INTO screenings VALUES (4, '류이치 사카모토-오퍼스',30,30);
+INSERT INTO screenings VALUES (5, '괴물',30,30);
+
+SELECT * from screenings;
+
+
+
+
+--예매확인 테이블
+CREATE TABLE booking (
+    movieNo NUMBER,
+    movieName VARCHAR2(50),
+    userId VARCHAR2(30),
+    checkMoive VARCHAR2(10),
+    FOREIGN KEY (movieNo) REFERENCES movies(movieNo),
+    FOREIGN KEY (userId) REFERENCES members(id)
+);
+
+SELECT * from booking;
+
+
+
+
+--테이블 삭제시
+DROP TABLE members;
+DROP TABLE movies;
+DROP TABLE screenings;
+DROP TABLE booking;
+
+commit;
+
+
+
+--예매 프로시저
+CREATE OR REPLACE PROCEDURE TicketingProcedure(
+    movieNum IN NUMBER,
+    userId IN VARCHAR2
+)
+IS
+    nowSeats NUMBER;
+
+BEGIN
+    -- 부킹 테이블 체크 (중복 예매 확인)
+    SELECT COUNT(*) INTO nowSeats FROM booking WHERE movieNo = movieNum AND userId = userId;
+
+    IF nowSeats > 0 THEN
+        -- 이미 예매된 영화
+        raise_application_error(-20001, '이미 예매된 영화입니다.');
+    ELSE
+        -- 스크리닝 테이블 셀렉트 (예매좌석 체크)
+        SELECT nowSeats INTO nowSeats FROM screenings WHERE movieNo = movieNum;
+
+        IF nowSeats > 0 THEN
+            -- 좌석이 남아있으면
+            -- 예매 정보 입력
+            INSERT INTO booking (movieNo, movieName, userId, checkMoive)
+            VALUES (movieNum, (SELECT movieName FROM screenings WHERE movieNo = movieNum), userId, '1');
+
+            -- 예매 성공시, 업데이트로 좌석수 -1 변경
+            UPDATE screenings SET nowSeats = nowSeats - 1 WHERE movieNo = movieNum;
+        END IF;
+    END IF;
+END TicketingProcedure;
+/
