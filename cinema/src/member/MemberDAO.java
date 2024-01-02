@@ -112,39 +112,41 @@ public class MemberDAO {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 
-		List<CinemaDTO> membersList = new ArrayList<CinemaDTO>();
+		List<CinemaDTO> membersList = new ArrayList<>();
 
 		try {
-			String sql = "select * from members";
+			String sql = "SELECT * FROM members";
 			pstmt = conn.prepareStatement(sql);
 			rs = pstmt.executeQuery();
 
-			// 결과를 리스트에 저장
+			// 결과를 리스트에 저장 (제외: ID가 'admin'인 경우)
 			while (rs.next()) {
-				CinemaDTO members = new CinemaDTO();
+				String memberId = rs.getString("id");
+				if (!"admin".equals(memberId)) {
+					CinemaDTO members = new CinemaDTO();
 
-				members.setId(rs.getString("id"));
-				members.setPw(rs.getString("pw"));
-				members.setName(rs.getString("name"));
-				members.setBirth(rs.getInt("birth"));
-				members.setTel(rs.getString("tel"));
+					members.setId(memberId);
+					members.setPw(rs.getString("pw"));
+					members.setName(rs.getString("name"));
+					members.setBirth(rs.getInt("birth"));
+					members.setTel(rs.getString("tel"));
 
-				membersList.add(members);
+					membersList.add(members);
+				}
 			}
+
 			if (!membersList.isEmpty()) {
 				// Iterator 사용하여 리스트 출력
 				Iterator<CinemaDTO> it = membersList.iterator();
 				System.out.println("   ========================회원 정보========================");
-				System.out.printf("    %s %9s %8s %8s\n", "아이디", "이름", "생일", "전화번호");
+				System.out.printf("    %s     %5s     %5s     %5s\n", "아이디", "이름", "생일", "전화번호");
 				while (it.hasNext()) {
 					CinemaDTO dto = it.next();
-					System.out.printf("    %s %8s  %8d   %8s", dto.getId(), dto.getName(), dto.getBirth(),
+					System.out.printf("    %s     %5s    %8d    %10s\n", dto.getId(), dto.getName(), dto.getBirth(),
 							dto.getTel());
-					System.out.println();
 				}
 			} else {
 				System.out.println("저장된 회원이 없습니다.");
-
 			}
 			System.out.println("   =========================================================");
 
@@ -227,10 +229,10 @@ public class MemberDAO {
 			if (!bookingList.isEmpty()) {
 
 				System.out.println("   ========================예매 내역========================");
-				System.out.printf("    %s %9s %10s %10s\n", "아이디", "이름", "전화번호", "영화이름");
+				System.out.printf("    %s %6s   %9s   %8s\n", "아이디", "이름", "전화번호", "영화이름");
 				for (CinemaDTO booking : bookingList) {
-					System.out.printf("    %s %8s  %4s     %s\n", booking.getId(), booking.getName(), booking.getTel(),
-							booking.getMovieName());
+					System.out.printf("    %s  %5s   %3s     %s\n", booking.getId(), booking.getName(),
+							booking.getTel(), booking.getMovieName());
 				}
 				System.out.println("   =========================================================");
 
