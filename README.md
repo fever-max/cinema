@@ -16,6 +16,10 @@
         <td colspan="3">팀/ 2인 (이혜민, 김세빈)</td>
     </tr>
     <tr>
+        <th>맡은기능</th>
+        <td colspan="3">영화예매, 영화정보, 관리자페이지</td>
+    </tr>
+    <tr>
         <th>운영체제</th>
         <td colspan="3">Windows 10</td>
     </tr>
